@@ -52,6 +52,41 @@ def preprocess_sketch(image_path, output_path):
         cv2.THRESH_BINARY + cv2.THRESH_OTSU
     )
 
+    # Remove small isolated noise and find the drawing boundaries
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+        255 - binary,
+        connectivity=8
+    )
+
+    cleaned = np.full(binary.shape, 255, dtype=np.uint8)
+
+    # Keep components that are large enough to be part of the drawing
+    for i in range(1, num_labels):
+        area = stats[i, cv2.CC_STAT_AREA]
+
+        if area >= 8:
+            cleaned[labels == i] = 0
+
+    # Find the bounding box of the remaining drawing
+    ys, xs = np.where(cleaned == 0)
+
+    if len(xs) == 0:
+        raise ValueError("No drawing detected in image")
+
+    x_min, x_max = xs.min(), xs.max()
+    y_min, y_max = ys.min(), ys.max()
+
+    # Add padding around the drawing
+    padding = 30
+
+    x_min = max(0, x_min - padding)
+    y_min = max(0, y_min - padding)
+    x_max = min(cleaned.shape[1], x_max + padding)
+    y_max = min(cleaned.shape[0], y_max + padding)
+
+    # Crop the drawing
+    binary = cleaned[y_min:y_max, x_min:x_max]
+
     # Preserve aspect ratio while resizing
     height, width = binary.shape
 
