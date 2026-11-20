@@ -1,0 +1,25 @@
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model weights and caches
+models/
+.cache/
+huggingface_cache/
+
+# Environment variables
+.env
+
+# Generated outputs
+outputs/
+
+# VS Code
+.vscode/

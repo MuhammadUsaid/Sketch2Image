@@ -1,0 +1,9 @@
+# Image processing
+Pillow
+opencv-python
+numpy
+matplotlib
+pandas
+tqdm
+PyYAML
+gradio
